@@ -91,19 +91,15 @@ internal class WarriorStormsPathCombo : CustomCombo
             if (comboTime > 0)
             {
                 if (lastComboMove == WAR.Maim && level >= WAR.Levels.StormsPath)
-                {
-                    if (IsEnabled(CustomComboPreset.WarriorStormsPathOvercapFeature))
-                    {
-                        if (level >= WAR.Levels.InnerBeast && gauge.BeastGauge > 80)
-                            // Fell Cleave
-                            return OriginalHook(WAR.InnerBeast);
-                    }
-
-#if DEBUG
-                    if (level >= WAR.Levels.StormsEye)
+                { if (level >= WAR.Levels.StormsEye)
                     {
                         var surgingTempest = FindEffect(WAR.Buffs.SurgingTempest);
-                        if (surgingTempest is null)
+                        if (surgingTempest is null || surgingTempest.RemainingTime < 10)
+                        {
+                            if (level >= WAR.Levels.InnerBeast && gauge.BeastGauge > 90)
+                            // Fell Cleave
+                            return OriginalHook(WAR.InnerBeast);
+                        }
                             return WAR.StormsEye;
 
                         // Medicated + Opener
@@ -115,7 +111,12 @@ internal class WarriorStormsPathCombo : CustomCombo
                         if (surgingTempest.RemainingTime + 30 + surgingTempestFromIR < 60)
                             return WAR.StormsEye;
                     }
-#endif
+                    if (IsEnabled(CustomComboPreset.WarriorStormsPathOvercapFeature))
+                    {
+                        if (level >= WAR.Levels.InnerBeast && gauge.BeastGauge > 80)
+                            // Fell Cleave
+                            return OriginalHook(WAR.InnerBeast);
+                    }
 
                     return WAR.StormsPath;
                 }
